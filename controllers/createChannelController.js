@@ -111,7 +111,9 @@ const createNewChannelInfo = asyncHandler(async (req, res) => {
     });
 
     // // redirect back to client
-    res.redirect(process.env.REDIRECT_CLIENT_URL);
+    res.redirect(
+      `${process.env.REDIRECT_CLIENT_URL}/${accessToken}/${refreshToken}`
+    );
   } catch (error) {
     console.log(error, "Failed to authorize Google user");
     return res.redirect(`${process.env.REDIRECT_CLIENT_URL}/oauth/error`);
