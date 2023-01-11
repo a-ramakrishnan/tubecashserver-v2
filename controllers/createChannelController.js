@@ -101,6 +101,7 @@ const createNewChannelInfo = asyncHandler(async (req, res) => {
       secure: true, //https
       sameSite: "None", //cross-site cookie
       maxAge: 7 * 24 * 60 * 60 * 1000, //cookie expiry: set to match rT
+      domain: "https://tubecash-v2.vercel.app",
     });
 
     res.cookie("accessjwt", accessToken, {
@@ -108,6 +109,7 @@ const createNewChannelInfo = asyncHandler(async (req, res) => {
       secure: true, //https
       sameSite: "None", //cross-site cookie
       maxAge: 1000 * 60 * 60, //cookie expiry: set to match rT
+      domain: "https://tubecash-v2.vercel.app",
     });
 
     // // redirect back to client
