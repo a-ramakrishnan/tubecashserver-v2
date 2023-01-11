@@ -22,14 +22,14 @@ const createNewChannelInfo = asyncHandler(async (req, res) => {
       scope,
       token_type,
     } = await getGoogleOAuthTokens({ code });
-    console.log({
-      id_token,
-      access_token,
-      expires_in,
-      refresh_token,
-      scope,
-      token_type,
-    });
+    // console.log({
+    //   id_token,
+    //   access_token,
+    //   expires_in,
+    //   refresh_token,
+    //   scope,
+    //   token_type,
+    // });
 
     // get user with tokens
     const googleUser = await getGoogleUser({ id_token, access_token });

@@ -17,8 +17,7 @@ const getPerformanceChannelStats = asyncHandler(async (req, res) => {
 
   let channelID, accessToken, refreshToken;
 
-  console.log(req.body);
-  console.log("Inside the stats controller");
+  //console.log(req.body);
 
   jwt.verify(access, process.env.JWT_PRIVATE, function (err, decoded) {
     try {
@@ -28,8 +27,8 @@ const getPerformanceChannelStats = asyncHandler(async (req, res) => {
       console.log("Error is", err);
     }
   });
-  console.log("ChannelID is ", channelID);
-  console.log("Access Token is ", accessToken);
+  // console.log("ChannelID is ", channelID);
+  // console.log("Access Token is ", accessToken);
 
   // Getting Video Statistics
   //const data = getVideoStats({ channelID, accessToken });
@@ -101,8 +100,7 @@ const getVideoChannelStats = asyncHandler(async (req, res) => {
 
   let channelID, accessToken, refreshToken;
 
-  console.log(req.body);
-  console.log("Inside the video stats controller");
+  //console.log(req.body);
 
   jwt.verify(access, process.env.JWT_PRIVATE, function (err, decoded) {
     try {
@@ -112,13 +110,13 @@ const getVideoChannelStats = asyncHandler(async (req, res) => {
       console.log("Error is", err);
     }
   });
-  console.log("ChannelID is ", channelID);
-  console.log("Access Token is ", accessToken);
+  //console.log("ChannelID is ", channelID);
+  //console.log("Access Token is ", accessToken);
 
   // Getting Video Statistics
   //const data = getVideoStats({ channelID, accessToken });
   const data = await getVideoStats({ channelID, accessToken });
-  console.log(data);
+  //console.log(data);
   if (data) {
     const { _id } = await User.findOne().select("-password").lean();
     const { googleID, channelName } = await Channel.findOne({
@@ -201,8 +199,7 @@ const getFullChannelStats = asyncHandler(async (req, res) => {
 
   let channelID, accessToken, refreshToken;
 
-  console.log(req.body);
-  console.log("Inside the stats controller");
+  //console.log(req.body);
 
   jwt.verify(access, process.env.JWT_PRIVATE, function (err, decoded) {
     try {
@@ -212,8 +209,8 @@ const getFullChannelStats = asyncHandler(async (req, res) => {
       console.log("Error is", err);
     }
   });
-  console.log("ChannelID is ", channelID);
-  console.log("Access Token is ", accessToken);
+  //console.log("ChannelID is ", channelID);
+  //console.log("Access Token is ", accessToken);
 
   // Getting Video Statistics
   //const data = getVideoStats({ channelID, accessToken });
