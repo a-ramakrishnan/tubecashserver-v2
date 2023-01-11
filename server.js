@@ -16,7 +16,9 @@ const PORT = process.env.PORT || 3501;
 
 connectDb();
 app.use(logger);
-app.use(cors(corsOptions));
+//app.use(cors(corsOptions));
+// This is for temp purposes. Should be changed
+app.use(cors());
 
 app.use(express.json());
 app.use(cookieParser());
