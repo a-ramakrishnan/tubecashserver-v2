@@ -97,19 +97,17 @@ const createNewChannelInfo = asyncHandler(async (req, res) => {
 
     // Create secure cookie with refresh token
     res.cookie("refreshjwt", refreshToken, {
-      httpOnly: false, //accessible only by web server
+      httpOnly: true, //accessible only by web server
       secure: true, //https
       sameSite: "None", //cross-site cookie
       maxAge: 7 * 24 * 60 * 60 * 1000, //cookie expiry: set to match rT
-      domain: ".tubecash-v2.vercel.app",
     });
 
     res.cookie("accessjwt", accessToken, {
-      httpOnly: false, //accessible only by web server
+      httpOnly: true,
       secure: true, //https
       sameSite: "None", //cross-site cookie
       maxAge: 1000 * 60 * 60, //cookie expiry: set to match rT
-      domain: ".tubecash-v2.vercel.app",
     });
 
     // // redirect back to client
