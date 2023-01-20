@@ -1,6 +1,31 @@
 const axios = require("axios");
 const qs = require("qs");
 
+const updateOAuthTokens = async ({ refresh_token }) => {
+  const url = "https://oauth2.googleapis.com/token";
+
+  const values = {
+    client_id: process.env.GOOGLE_CLIENT_ID,
+    client_secret: process.env.GOOGLE_SECRET,
+    refresh_token: refresh_token,
+    grant_type: "refresh_token",
+  };
+
+  try {
+    const res = await axios.post(url, qs.stringify(values), {
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+    });
+
+    return res.data;
+  } catch (error) {
+    console.error(error.response.data.error);
+
+    throw new Error(error.message);
+  }
+};
+
 const getGoogleOAuthTokens = async ({ code }) => {
   const url = "https://oauth2.googleapis.com/token";
 
@@ -73,7 +98,7 @@ const getVideoStats = async ({ channelID, accessToken }) => {
 
   try {
     const res = await axios.get(
-      `https://youtubeanalytics.googleapis.com/v2/reports?access_token=${accessToken}&dimensions=video&endDate=2023-01-07&ids=channel%3D%3D${channelID}&maxResults=200&metrics=${fields}&sort=-estimatedRevenue&startDate=2017-01-01`
+      `https://youtubeanalytics.googleapis.com/v2/reports?access_token=${accessToken}&dimensions=video&endDate=2023-01-19&ids=channel%3D%3D${channelID}&maxResults=200&metrics=${fields}&sort=-estimatedRevenue&startDate=2017-01-01`
     );
 
     console.log(res);
@@ -93,7 +118,7 @@ const getPerformanceStats = async ({ channelID, accessToken }) => {
 
   try {
     const res = await axios.get(
-      `https://youtubeanalytics.googleapis.com/v2/reports?access_token=${accessToken}&dimensions=day&&endDate=2023-01-07&ids=channel%3D%3D${channelID}&metrics=${fields}&startDate=2017-01-01&sort=day`
+      `https://youtubeanalytics.googleapis.com/v2/reports?access_token=${accessToken}&dimensions=day&&endDate=2023-01-19&ids=channel%3D%3D${channelID}&metrics=${fields}&startDate=2017-01-01&sort=day`
     );
 
     return res.data;
@@ -111,7 +136,64 @@ const getFullStats = async ({ channelID, accessToken }) => {
 
   try {
     const res = await axios.get(
-      `https://youtubeanalytics.googleapis.com/v2/reports?access_token=${accessToken}&dimensions=day&endDate=2023-01-07&ids=channel%3D%3D${channelID}&metrics=${fields}&startDate=2017-01-01&sort=day`
+      `https://youtubeanalytics.googleapis.com/v2/reports?access_token=${accessToken}&dimensions=day&endDate=2023-01-19&ids=channel%3D%3D${channelID}&metrics=${fields}&startDate=2017-01-01&sort=day`
+    );
+
+    return res.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const getPlaylistUploadsKey = async ({ channelID, accessToken }) => {
+  console.log("Inside get Playlist Uploads Key_______________");
+  //console.log(channelID, accessToken);
+
+  const fields = "snippet%2CcontentDetails%2Cstatistics";
+
+  try {
+    const res = await axios.get(
+      `https://youtube.googleapis.com/youtube/v3/channels?part=${fields}&access_token=${accessToken}&id=${channelID}&key=${process.env.GOOGLE_API_KEY}`
+    );
+
+    return res.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const getVideoDataFirstPage = async ({ accessToken, uploads }) => {
+  //youtube.googleapis.com/youtube/v3/playlistItems
+
+  console.log("Inside get Full Video Data_______________");
+
+  const fields = "snippet";
+
+  try {
+    const res = await axios.get(
+      `https://youtube.googleapis.com/youtube/v3/playlistItems?part=${fields}&maxResults=500&access_token=${accessToken}&playlistId=${uploads}&key=${process.env.GOOGLE_API_KEY}`
+    );
+
+    return res.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const getVideoDataMultiplePages = async ({
+  accessToken,
+  uploads,
+  nextPageToken,
+}) => {
+  //youtube.googleapis.com/youtube/v3/playlistItems
+
+  console.log("Inside get Full Video Data Multiple Pages_______________");
+
+  const fields = "snippet";
+
+  try {
+    const res = await axios.get(
+      `https://youtube.googleapis.com/youtube/v3/playlistItems?part=${fields}&maxResults=500&access_token=${accessToken}&playlistId=${uploads}&pageToken=${nextPageToken}&key=${process.env.GOOGLE_API_KEY}`
     );
 
     return res.data;
@@ -127,4 +209,8 @@ module.exports = {
   getVideoStats,
   getPerformanceStats,
   getFullStats,
+  updateOAuthTokens,
+  getPlaylistUploadsKey,
+  getVideoDataFirstPage,
+  getVideoDataMultiplePages,
 };

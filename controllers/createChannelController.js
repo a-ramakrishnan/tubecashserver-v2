@@ -72,48 +72,8 @@ const createNewChannelInfo = asyncHandler(async (req, res) => {
       }
     );
 
-    //console.log(newChannel);
-    const accessToken = jwt.sign(
-      {
-        ChannelInfo: {
-          channelID: channelID,
-          accessToken: access_token,
-        },
-      },
-      process.env.JWT_PRIVATE,
-      { expiresIn: "1h" }
-    );
-
-    const refreshToken = jwt.sign(
-      {
-        ChannelInfo: {
-          channelID: channelID,
-          refreshToken: refresh_token,
-        },
-      },
-      process.env.JWT_PRIVATE,
-      { expiresIn: 3.154e10 }
-    );
-
-    // Create secure cookie with refresh token
-    res.cookie("refreshjwt", refreshToken, {
-      httpOnly: true, //accessible only by web server
-      secure: true, //https
-      sameSite: "None", //cross-site cookie
-      maxAge: 7 * 24 * 60 * 60 * 1000, //cookie expiry: set to match rT
-    });
-
-    res.cookie("accessjwt", accessToken, {
-      httpOnly: true,
-      secure: true, //https
-      sameSite: "None", //cross-site cookie
-      maxAge: 1000 * 60 * 60, //cookie expiry: set to match rT
-    });
-
     // // redirect back to client
-    res.redirect(
-      `${process.env.REDIRECT_CLIENT_URL}/${accessToken}/${refreshToken}`
-    );
+    res.redirect(`${process.env.REDIRECT_CLIENT_URL}`);
   } catch (error) {
     console.log(error, "Failed to authorize Google user");
     return res.redirect(`${process.env.REDIRECT_CLIENT_URL}/oauth/error`);
