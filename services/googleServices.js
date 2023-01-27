@@ -108,6 +108,26 @@ const getVideoStats = async ({ channelID, accessToken }) => {
   }
 };
 
+const getDailyVideoStats = async ({ channelID, accessToken }) => {
+  //https://www.googleapis.com/youtube/analytics/v1/reports?access_token=access_token&ids=channel%3D%3DMINE&start-date=2016-05-01&end-date=2016-06-30&metrics=views
+  console.log("Inside Video Stats_______________");
+  console.log(channelID, accessToken);
+
+  const fields =
+    "views%2Ccomments%2Clikes%2Cdislikes%2Cshares%2CvideosAddedToPlaylists%2CvideosRemovedFromPlaylists%2CsubscribersLost%2CestimatedMinutesWatched%2CaverageViewDuration%2CaverageViewPercentage%2CsubscribersGained%2CestimatedRevenue%2CestimatedAdRevenue%2CestimatedRedPartnerRevenue%2CgrossRevenue%2Ccpm%2CadImpressions%2CmonetizedPlaybacks%2CplaybackBasedCpm";
+
+  try {
+    const res = await axios.get(
+      `https://youtubeanalytics.googleapis.com/v2/reports?access_token=${accessToken}&dimensions=video&endDate=2023-01-19&ids=channel%3D%3D${channelID}&maxResults=200&metrics=${fields}&sort=-estimatedRevenue&startDate=2017-01-01`
+    );
+
+    console.log(res);
+    return res.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 const getPerformanceStats = async ({ channelID, accessToken }) => {
   //https://www.googleapis.com/youtube/analytics/v1/reports?access_token=access_token&ids=channel%3D%3DMINE&start-date=2016-05-01&end-date=2016-06-30&metrics=views
   console.log("Inside Performance Stats_______________");
@@ -213,4 +233,5 @@ module.exports = {
   getPlaylistUploadsKey,
   getVideoDataFirstPage,
   getVideoDataMultiplePages,
+  getDailyVideoStats,
 };

@@ -10,6 +10,9 @@ router
   .route("/performancestats")
   .post(channelInfoController.getPerformanceChannelStats);
 router.route("/videostats").post(channelInfoController.getVideoChannelStats);
+router
+  .route("/dailyvideostats")
+  .post(channelInfoController.getDailyVideoChannelStats);
 router.route("/fullstats").post(channelInfoController.getFullChannelStats);
 router.route("/getFullVideoData").post(channelInfoController.getFullVideoData);
 

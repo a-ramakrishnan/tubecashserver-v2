@@ -10,6 +10,7 @@ const {
   getVideoDataMultiplePages,
   getPerformanceStats,
   getVideoStats,
+  getDailyVideoStats,
   getFullStats,
 } = require("../services/googleServices");
 const NewChannel = require("../models/NewChannel");
@@ -17,6 +18,7 @@ const NewChannel = require("../models/NewChannel");
 const User = require("../models/User");
 
 const VideoStats = require("../models/Video");
+const DailyVideoStats = require("../models/dailyVideo");
 
 const FullChannelStats = require("../models/FullChannelStats");
 
@@ -61,6 +63,7 @@ const updateTokens = asyncHandler(async (req, res) => {
         id_token: id_token,
         expires_in: expires_in,
         lastUpdatedDate: new Date().toLocaleDateString("en-IN"),
+        refresh_token: refresh_token,
       },
       {
         upsert: true,
@@ -312,6 +315,7 @@ const getPerformanceChannelStats = asyncHandler(async (req, res) => {
   }
 });
 
+//This includes video revenue
 const getVideoChannelStats = asyncHandler(async (req, res) => {
   const { channelID } = req.body;
 
@@ -427,6 +431,137 @@ const getVideoChannelStats = asyncHandler(async (req, res) => {
           );
         });
         console.log(videoStats);
+      } catch (error) {
+        console.log(error);
+      }
+    } else {
+      res.status(403);
+      res.send({ message: "Did not receive data. permission error" });
+    }
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+//This includes video revenue
+const getDailyVideoChannelStats = asyncHandler(async (req, res) => {
+  const { channelID } = req.body;
+
+  console.log(req.body);
+
+  try {
+    const { _id } = await User.findOne().select("-password").lean();
+
+    const { googleID, access_token, channelName } = await Channel.findOne({
+      channelID: channelID,
+    }).exec();
+    const data = await getDailyVideoStats({
+      channelID,
+      accessToken: access_token,
+    });
+    //console.log(data);
+    if (data) {
+      //console.log(data);
+      const dataToWrite = data.rows.map(
+        ([
+          video,
+          views,
+          comments,
+          likes,
+          dislikes,
+          shares,
+          videosAddedToPlaylists,
+          videosRemovedFromPlaylists,
+          subscribersLost,
+          estimatedMinutesWatched,
+          averageViewDuration,
+          averageViewPercentage,
+          subscribersGained,
+          estimatedRevenue,
+          estimatedAdRevenue,
+          estimatedRedPartnerRevenue,
+          grossRevenue,
+          cpm,
+          adImpressions,
+          monetizedPlaybacks,
+          playbackBasedCpm,
+        ]) => ({
+          video,
+          views,
+          comments,
+          likes,
+          dislikes,
+          shares,
+          videosAddedToPlaylists,
+          videosRemovedFromPlaylists,
+          subscribersLost,
+          estimatedMinutesWatched,
+          averageViewDuration,
+          averageViewPercentage,
+          subscribersGained,
+          estimatedRevenue,
+          estimatedAdRevenue,
+          estimatedRedPartnerRevenue,
+          grossRevenue,
+          cpm,
+          adImpressions,
+          monetizedPlaybacks,
+          playbackBasedCpm,
+        })
+      );
+      //console.log(dataToWrite);
+
+      const arrToWrite = dataToWrite.map((g) => ({
+        googleID: googleID,
+        user: _id,
+        channelID: channelID,
+        channelName: channelName,
+        ...g,
+      }));
+      //console.log(arrToWrite);
+
+      try {
+        const dailyVideoStats = await DailyVideoStats.insertMany(arrToWrite);
+
+        // const videoStats = arrToWrite.map(async (field) => {
+        //   await DailyVideoStats.findOneAndUpdate(
+        //     {
+        //       channelID: field.channelID,
+        //       user: field.user,
+        //       googleID: field.googleID,
+        //       video: field.video,
+        //     },
+        //     {
+        //       user: field.user,
+        //       channelID: field.channelID,
+        //       channelName: field.channelName,
+        //       googleID: field.googleID,
+        //       video: field.video,
+        //       views: field.views,
+        //       comments: field.comments,
+        //       likes: field.likes,
+        //       dislikes: field.dislikes,
+        //       shares: field.shares,
+        //       videosAddedToPlaylists: field.videosAddedToPlaylists,
+        //       videosRemovedFromPlaylists: field.videosRemovedFromPlaylists,
+        //       subscribersLost: field.subscribersLost,
+        //       estimatedMinutesWatched: field.estimatedMinutesWatched,
+        //       averageViewDuration: field.averageViewDuration,
+        //       averageViewPercentage: field.averageViewPercentage,
+        //       subscribersGained: field.subscribersGained,
+        //       estimatedRevenue: field.estimatedRevenue,
+        //       estimatedAdRevenue: field.estimatedAdRevenue,
+        //       estimatedRedPartnerRevenue: field.estimatedRedPartnerRevenue,
+        //       grossRevenue: field.grossRevenue,
+        //       cpm: field.cpm,
+        //       adImpressions: field.adImpressions,
+        //       monetizedPlaybacks: field.monetizedPlaybacks,
+        //       playbackBasedCpm: field.playbackBasedCpm,
+        //     },
+        //     { new: true }
+        //   );
+        // });
+        console.log(dailyVideoStats);
       } catch (error) {
         console.log(error);
       }
@@ -572,4 +707,5 @@ module.exports = {
   getPerformanceChannelStats,
   getVideoChannelStats,
   getFullChannelStats,
+  getDailyVideoChannelStats,
 };
