@@ -7,6 +7,19 @@ router.use(verifyJWT);
 router.route("/").get(channelInfoController.getAllChannels);
 router.route("/updateTokens").post(channelInfoController.updateTokens);
 router
+  .route("/displayFullChannelStats")
+  .post(channelInfoController.displayFullChannelStats);
+
+router
+  .route("/displayDailyVideoStats")
+  .post(channelInfoController.displayDailyVideoStats);
+router
+  .route("/displayVideoRevenueStats")
+  .post(channelInfoController.displayVideoRevenueStats);
+router
+  .route("/displayAllVideoUploaded")
+  .post(channelInfoController.displayAllVideoUploaded);
+router
   .route("/performancestats")
   .post(channelInfoController.getPerformanceChannelStats);
 router.route("/videostats").post(channelInfoController.getVideoChannelStats);

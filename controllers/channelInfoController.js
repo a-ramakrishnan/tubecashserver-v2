@@ -1,7 +1,6 @@
 const asyncHandler = require("express-async-handler");
 const Channel = require("../models/NewChannel");
-const PerformanceStats = require("../models/PerformanceStats");
-const AllVideoInfo = require("../models/AllVideoInfo");
+
 const {
   updateOAuthTokens,
 
@@ -16,7 +15,8 @@ const {
 const NewChannel = require("../models/NewChannel");
 
 const User = require("../models/User");
-
+const PerformanceStats = require("../models/PerformanceStats");
+const AllVideoInfo = require("../models/AllVideoInfo");
 const VideoStats = require("../models/Video");
 const DailyVideoStats = require("../models/dailyVideo");
 
@@ -24,6 +24,7 @@ const FullChannelStats = require("../models/FullChannelStats");
 
 const getAllChannels = asyncHandler(async (req, res) => {
   // Get all users from MongoDB
+  console.log(req.user);
   const channels = await Channel.find()
     .select([
       "-user",
@@ -700,6 +701,73 @@ const getFullChannelStats = asyncHandler(async (req, res) => {
   }
 });
 
+const displayFullChannelStats = asyncHandler(async (req, res) => {
+  const { channelID } = req.body;
+
+  try {
+    const stats = await FullChannelStats.find({
+      channelID: channelID,
+    }).sort({ $natural: -1 });
+    if (!stats?.length) {
+      return res.status(400).json({ message: "No Stats found" });
+    }
+
+    console.log(stats.length);
+    res.json(stats);
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+const displayDailyVideoStats = asyncHandler(async (req, res) => {
+  const { channelID } = req.body;
+  try {
+    const stats = await DailyVideoStats.find({
+      channelID: channelID,
+    });
+    if (!stats?.length) {
+      return res.status(400).json({ message: "No Stats found" });
+    }
+
+    res.json(stats);
+  } catch (error) {
+    console.log(error);
+  }
+});
+const displayVideoRevenueStats = asyncHandler(async (req, res) => {
+  const { channelID } = req.body;
+  try {
+    const stats = await VideoStats.find({
+      channelID: channelID,
+    });
+    if (!stats?.length) {
+      return res.status(400).json({ message: "No Stats found" });
+    }
+
+    res.json(stats);
+  } catch (error) {
+    console.log(error);
+  }
+});
+const displayAllVideoUploaded = asyncHandler(async (req, res) => {
+  const { channelID } = req.body;
+  console.log(channelID)
+  try {
+    const stats = await AllVideoInfo.find({
+      channelID: channelID,
+    });
+    console.log('Length of Stats is ', stats.length)
+    if (!stats?.length) {
+      return res.status(400).json({ message: "No Stats found" });
+    }
+
+    console.log('Inside all Videos function', stats)
+    res.json(stats);
+  } catch (error) {
+    console.log(error);
+  }
+});
+
 module.exports = {
   getAllChannels,
   updateTokens,
@@ -708,4 +776,8 @@ module.exports = {
   getVideoChannelStats,
   getFullChannelStats,
   getDailyVideoChannelStats,
+  displayFullChannelStats,
+  displayDailyVideoStats,
+  displayVideoRevenueStats,
+  displayAllVideoUploaded,
 };

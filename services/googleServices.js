@@ -1,6 +1,11 @@
 const axios = require("axios");
 const qs = require("qs");
 
+const yourDateTime = new Date();
+const dateTimeInParts = yourDateTime.toISOString().split("T");
+
+const endDate = dateTimeInParts[0];
+console.log("End Date is ", endDate);
 const updateOAuthTokens = async ({ refresh_token }) => {
   const url = "https://oauth2.googleapis.com/token";
 
@@ -98,7 +103,7 @@ const getVideoStats = async ({ channelID, accessToken }) => {
 
   try {
     const res = await axios.get(
-      `https://youtubeanalytics.googleapis.com/v2/reports?access_token=${accessToken}&dimensions=video&endDate=2023-01-19&ids=channel%3D%3D${channelID}&maxResults=200&metrics=${fields}&sort=-estimatedRevenue&startDate=2017-01-01`
+      `https://youtubeanalytics.googleapis.com/v2/reports?access_token=${accessToken}&dimensions=video&endDate=${endDate}&ids=channel%3D%3D${channelID}&maxResults=200&metrics=${fields}&sort=-estimatedRevenue&startDate=2017-01-01`
     );
 
     console.log(res);
@@ -118,7 +123,7 @@ const getDailyVideoStats = async ({ channelID, accessToken }) => {
 
   try {
     const res = await axios.get(
-      `https://youtubeanalytics.googleapis.com/v2/reports?access_token=${accessToken}&dimensions=video&endDate=2023-01-19&ids=channel%3D%3D${channelID}&maxResults=200&metrics=${fields}&sort=-estimatedRevenue&startDate=2017-01-01`
+      `https://youtubeanalytics.googleapis.com/v2/reports?access_token=${accessToken}&dimensions=video&endDate=${endDate}&ids=channel%3D%3D${channelID}&maxResults=200&metrics=${fields}&sort=-estimatedRevenue&startDate=2017-01-01`
     );
 
     console.log(res);
@@ -138,7 +143,7 @@ const getPerformanceStats = async ({ channelID, accessToken }) => {
 
   try {
     const res = await axios.get(
-      `https://youtubeanalytics.googleapis.com/v2/reports?access_token=${accessToken}&dimensions=day&&endDate=2023-01-19&ids=channel%3D%3D${channelID}&metrics=${fields}&startDate=2017-01-01&sort=day`
+      `https://youtubeanalytics.googleapis.com/v2/reports?access_token=${accessToken}&dimensions=day&&endDate=${endDate}&ids=channel%3D%3D${channelID}&metrics=${fields}&startDate=2017-01-01&sort=day`
     );
 
     return res.data;
@@ -156,7 +161,7 @@ const getFullStats = async ({ channelID, accessToken }) => {
 
   try {
     const res = await axios.get(
-      `https://youtubeanalytics.googleapis.com/v2/reports?access_token=${accessToken}&dimensions=day&endDate=2023-01-19&ids=channel%3D%3D${channelID}&metrics=${fields}&startDate=2017-01-01&sort=day`
+      `https://youtubeanalytics.googleapis.com/v2/reports?access_token=${accessToken}&dimensions=day&endDate=${endDate}&ids=channel%3D%3D${channelID}&metrics=${fields}&startDate=2017-01-01&sort=day`
     );
 
     return res.data;
